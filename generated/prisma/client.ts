@@ -49,3 +49,13 @@ path.join(process.cwd(), "generated/prisma/query_engine-windows.dll.node")
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model File
+ * 
+ */
+export type File = Prisma.FileModel
+/**
+ * Model Folder
+ * 
+ */
+export type Folder = Prisma.FolderModel
