@@ -1,6 +1,6 @@
 import { prisma } from "@/src/lib/prisma/database";
 import { UserRepository } from "./user-repository";
-import { IUser } from "@/src/types/user-types";
+import { IUser, UpdateUserDto } from "@/src/types/user-types";
 
 export class PrismaUserRepository implements UserRepository {
   async findByEmail(email: string): Promise<IUser | null> {
@@ -13,7 +13,9 @@ export class PrismaUserRepository implements UserRepository {
     return user;
   }
 
-  async create(user: IUser): Promise<IUser> {
+  async create(
+    user: Omit<IUser, "id" | "createdAt" | "updatedAt">,
+  ): Promise<IUser> {
     const createdUser = await prisma.user.create({
       data: {
         name: user.name,
@@ -25,9 +27,9 @@ export class PrismaUserRepository implements UserRepository {
     return createdUser;
   }
 
-  async update(user: Partial<IUser>): Promise<IUser> {
+  async update(user: UpdateUserDto, userId: string): Promise<IUser> {
     const updatedUser = await prisma.user.update({
-      where: { email: user.email },
+      where: { id: userId },
       data: { user },
     });
 
