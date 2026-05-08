@@ -1,4 +1,4 @@
-import { JWTPayload } from "@/src/types/auth/auth-types";
+import { JWTPayload } from "@/src/types/auth-types";
 import { decrypt, encrypt } from "./jwt-strategie";
 import { cookies } from "next/headers";
 
@@ -35,4 +35,14 @@ export async function getSession() {
 export async function deleteSession() {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
+}
+
+export async function isAuthenticated(): Promise<JWTPayload | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) return null;
+
+  const payload = await decrypt(token);
+  return payload;
 }

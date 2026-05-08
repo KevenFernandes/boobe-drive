@@ -1,4 +1,4 @@
-import { JWTPayload } from "@/src/types/auth/auth-types";
+import { JWTPayload } from "@/src/types/auth-types";
 import { jwtVerify, SignJWT } from "jose";
 
 const SECRET_KEY = new TextEncoder().encode(process.env.SECRET_KEY);
@@ -11,11 +11,15 @@ export async function encrypt(payload: JWTPayload) {
     .sign(SECRET_KEY);
 }
 
-export async function decrypt(token: string) {
+export async function decrypt(token: string): Promise<JWTPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, SECRET_KEY, {
-      algorithms: ["HS256"],
-    });
+    const { payload }: { payload: JWTPayload } = await jwtVerify(
+      token,
+      SECRET_KEY,
+      {
+        algorithms: ["HS256"],
+      },
+    );
     return payload;
   } catch {
     return null;
