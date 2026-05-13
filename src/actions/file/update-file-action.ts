@@ -3,7 +3,7 @@ import { authenticatedUserService } from "@/src/services/auth/auth-service";
 import { updateFileService } from "@/src/services/file/file-service";
 import { IFile, UpdateFileDto } from "@/src/types/file-types";
 import { ResponseActionTypes } from "@/src/types/response-action-types";
-import z from "zod";
+import { formatZodErrors } from "@/src/utils/format-zod-error";
 
 export async function updateFileAction(
   prevData: UpdateFileDto,
@@ -23,12 +23,10 @@ export async function updateFileAction(
   const result = updateFileSchema.safeParse(data);
 
   if (!result.success) {
-    const { errors } = z.treeifyError(result.error);
-
     return {
       data: prevData,
       success: false,
-      errors,
+      errors: formatZodErrors(result.error),
     };
   }
 

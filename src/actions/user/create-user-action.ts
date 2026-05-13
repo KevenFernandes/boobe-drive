@@ -2,8 +2,8 @@ import { createUserSchema } from "@/src/lib/schemas/user-validation";
 import { hashPassword } from "@/src/lib/bcrypt/hashing-password";
 import { createUserService } from "@/src/services/user/user-service";
 import { CreateUserDto } from "@/src/types/user-types";
-import z from "zod";
 import { ResponseActionTypes } from "@/src/types/response-action-types";
+import { formatZodErrors } from "@/src/utils/format-zod-error";
 
 export async function createUserAction(
   prevData: Omit<CreateUserDto, "password">,
@@ -19,16 +19,14 @@ export async function createUserAction(
     };
   }
 
-  const data = Object.fromEntries(formData.entries()); // conversao de formdata para obj cru
-  const result = createUserSchema.safeParse(data); // validacao dos dados
+  const data = Object.fromEntries(formData.entries());
+  const result = createUserSchema.safeParse(data);
 
   if (!result.success) {
-    const { errors } = z.treeifyError(result.error);
-
     return {
       data: prevData,
       success: false,
-      errors: errors,
+      errors: formatZodErrors(result.error),
     };
   }
 
@@ -57,7 +55,6 @@ export async function createUserAction(
       data: prevData,
       success: false,
       errors: [msg],
-      message: "Error ao criar usuário, tente mais tarde",
     };
   }
 }

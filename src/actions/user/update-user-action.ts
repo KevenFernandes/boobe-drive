@@ -3,7 +3,7 @@ import { authenticatedUserService } from "@/src/services/auth/auth-service";
 import { updateUserService } from "@/src/services/user/user-service";
 import { ResponseActionTypes } from "@/src/types/response-action-types";
 import { UpdateUserDto } from "@/src/types/user-types";
-import z from "zod";
+import { formatZodErrors } from "@/src/utils/format-zod-error";
 
 export async function updateUserAction(
   prevData: UpdateUserDto,
@@ -23,12 +23,10 @@ export async function updateUserAction(
   const result = updateUserSchema.safeParse(data);
 
   if (!result.success) {
-    const { errors } = z.treeifyError(result.error);
-
     return {
       data: prevData,
       success: false,
-      errors: errors,
+      errors: formatZodErrors(result.error),
     };
   }
 

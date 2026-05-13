@@ -5,10 +5,10 @@ import {
   IFile,
   MAX_SIZE_FILE,
 } from "@/src/types/file-types";
-import z from "zod";
 import { createFileService } from "@/src/services/file/file-service";
 import { authenticatedUserService } from "@/src/services/auth/auth-service";
 import { ResponseActionTypes } from "@/src/types/response-action-types";
+import { formatZodErrors } from "@/src/utils/format-zod-error";
 
 export async function createFileAction(
   prevData: CreateFileDto,
@@ -22,19 +22,16 @@ export async function createFileAction(
     };
   }
 
-  // sub === id
   const userId = await authenticatedUserService();
 
   const data = Object.fromEntries(formData);
   const result = createFileSchema.safeParse(data);
 
   if (!result.success) {
-    const { errors } = z.treeifyError(result.error);
-
     return {
       data: prevData,
       success: false,
-      errors: errors,
+      errors: formatZodErrors(result.error),
     };
   }
 

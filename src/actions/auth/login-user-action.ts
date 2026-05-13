@@ -3,8 +3,8 @@ import { loginUserSchema } from "@/src/lib/schemas/auth-validation";
 import { loginService } from "@/src/services/auth/auth-service";
 import { LoginUserDto } from "@/src/types/auth-types";
 import { ResponseActionTypes } from "@/src/types/response-action-types";
+import { formatZodErrors } from "@/src/utils/format-zod-error";
 import { redirect } from "next/navigation";
-import z from "zod";
 
 export async function loginAction(
   prevData: LoginUserDto,
@@ -22,12 +22,10 @@ export async function loginAction(
   const result = loginUserSchema.safeParse(data);
 
   if (!result.success) {
-    const { errors } = z.treeifyError(result.error);
-
     return {
       data: { email: prevData.email },
       success: false,
-      errors: errors,
+      errors: formatZodErrors(result.error),
     };
   }
 
