@@ -14,11 +14,11 @@ export const createFileSchema = z.object({
     .nullable(),
 
   file: z
-    .instanceof(File, { message: "Seleciona um arquivo válido" })
+    .instanceof(File, { message: "Selecione um arquivo válido" })
     .refine((file) => file.size <= MAX_SIZE_FILE, "O tamanho máximo é de 5MB")
     .refine((file) => ACCEPT_FILE.includes(file.type), "Arquivo não suportado"),
 
-  folderId: z.uuid("ID de pasta inválido").optional().nullable(),
+  folderId: z.uuid("ID da pasta inválido").optional().nullable(),
 });
 
 export const updateFileSchema = createFileSchema
