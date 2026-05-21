@@ -27,7 +27,7 @@ export async function createFileService(data: CreateFileDto, userId: string) {
 
   const newFile = await fileRepository.create(fileObj);
 
-  if (!newFile) throw new Error("Falha ao criar usuário");
+  if (!newFile) throw new Error("Falha ao criar arquivo");
 
   return newFile;
 }
