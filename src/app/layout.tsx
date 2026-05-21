@@ -27,7 +27,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-gray-900">
+        {children}
+        <footer className="h-12 bg-yellow-500/30 flex items-center justify-center">
+          <span className="text-black font-medium text-sm">
+            2026 &copy; Keven Fernandes
+          </span>
+        </footer>
+      </body>
     </html>
   );
 }
