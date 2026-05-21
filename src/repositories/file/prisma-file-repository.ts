@@ -10,8 +10,8 @@ export class PrismaFileRepository implements FileRepository {
   ): Promise<IFile[]> {
     const files = await prisma.file.findMany({
       where: { authorId: authorId },
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (page - 1) * limit, //onde começa
+      take: limit, //onde termina - quantidade de registro
       orderBy: {
         createdAt: "desc",
       },

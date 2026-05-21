@@ -6,5 +6,5 @@ export interface UserRepository {
 
   create(user: IUser): Promise<IUser>;
   update(user: UpdateUserDto, userId: string): Promise<IUser>;
-  delete(id: string): Promise<void>;
+  delete(id: string): Promise<IUser>;
 }
