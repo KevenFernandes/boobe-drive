@@ -21,45 +21,46 @@ export async function createFileAction(
       errors: ["Formato de dados inválidos."],
     };
   }
-
-  const userId = await authenticatedUserService();
-
-  const data = Object.fromEntries(formData);
-  const result = createFileSchema.safeParse(data);
-
-  if (!result.success) {
-    return {
-      data: prevData,
-      success: false,
-      errors: formatZodErrors(result.error),
-    };
-  }
-
-  const file = result.data.file;
-  if (!(file instanceof File)) {
-    return {
-      data: prevData,
-      success: false,
-      errors: ["Dados inválidos"],
-    };
-  }
-  if (!ACCEPT_FILE.includes(file.type)) {
-    return {
-      data: prevData,
-      success: false,
-      errors: ["Formato do arquivo inválido"],
-    };
-  }
-
-  if (file.size > MAX_SIZE_FILE) {
-    return {
-      data: prevData,
-      success: false,
-      errors: ["Arquivo muito grande"],
-    };
-  }
-
   try {
+    const userId = await authenticatedUserService();
+
+    const data = Object.fromEntries(formData);
+    const result = createFileSchema.safeParse(data);
+
+    if (!result.success) {
+      return {
+        data: prevData,
+        success: false,
+        errors: formatZodErrors(result.error),
+      };
+    }
+
+    const file = result.data.file;
+
+    if (!(file instanceof File)) {
+      return {
+        data: prevData,
+        success: false,
+        errors: ["Dados inválidos"],
+      };
+    }
+
+    if (!ACCEPT_FILE.includes(file.type)) {
+      return {
+        data: prevData,
+        success: false,
+        errors: ["Formato do arquivo inválido"],
+      };
+    }
+
+    if (file.size > MAX_SIZE_FILE) {
+      return {
+        data: prevData,
+        success: false,
+        errors: ["Arquivo muito grande"],
+      };
+    }
+
     const fileCreated = await createFileService(result.data, userId);
 
     return {

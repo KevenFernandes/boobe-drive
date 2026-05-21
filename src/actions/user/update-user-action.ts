@@ -17,20 +17,20 @@ export async function updateUserAction(
     };
   }
 
-  const userId = await authenticatedUserService();
-
-  const data = Object.fromEntries(formData.entries());
-  const result = updateUserSchema.safeParse(data);
-
-  if (!result.success) {
-    return {
-      data: prevData,
-      success: false,
-      errors: formatZodErrors(result.error),
-    };
-  }
-
   try {
+    const userId = await authenticatedUserService();
+
+    const data = Object.fromEntries(formData.entries());
+    const result = updateUserSchema.safeParse(data);
+
+    if (!result.success) {
+      return {
+        data: prevData,
+        success: false,
+        errors: formatZodErrors(result.error),
+      };
+    }
+
     const updatedUser = await updateUserService(result.data, userId);
 
     return {

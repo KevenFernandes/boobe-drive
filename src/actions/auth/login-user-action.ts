@@ -1,18 +1,20 @@
+"use server";
+
 import { createSessionCookie } from "@/src/lib/auth/session";
 import { loginUserSchema } from "@/src/lib/schemas/auth-validation";
 import { loginService } from "@/src/services/auth/auth-service";
-import { LoginUserDto } from "@/src/types/auth-types";
-import { ResponseActionTypes } from "@/src/types/response-action-types";
+import type { ResponseActionTypes } from "@/src/types/response-action-types";
 import { formatZodErrors } from "@/src/utils/format-zod-error";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { redirect } from "next/navigation";
 
 export async function loginAction(
-  prevData: LoginUserDto,
+  prevData: ResponseActionTypes<{ email: string }>,
   formData: FormData,
 ): Promise<ResponseActionTypes<{ email: string }>> {
   if (!(formData instanceof FormData)) {
     return {
-      data: { email: prevData.email },
+      data: { email: prevData.data.email },
       success: false,
       errors: ["Dados inválidos"],
     };
@@ -23,26 +25,42 @@ export async function loginAction(
 
   if (!result.success) {
     return {
-      data: { email: prevData.email },
+      data: { email: prevData.data.email },
       success: false,
       errors: formatZodErrors(result.error),
     };
   }
+
+  let shouldRedirect = false;
 
   try {
     const user = await loginService(result.data);
 
     await createSessionCookie(user);
 
-    redirect("/auth");
+    shouldRedirect = true;
   } catch (error) {
     const msg =
       error instanceof Error ? error.message : `Error desconhecido: ${error}`;
 
+    if (isRedirectError(error)) {
+      throw error;
+    }
+
     return {
-      data: { email: prevData.email },
+      data: { email: result.data.email },
       success: false,
       errors: [msg],
     };
   }
+
+  if (shouldRedirect) {
+    redirect("/dashboard");
+  }
+
+  return {
+    data: { email: result.data.email },
+    success: true,
+    message: "Login efetuado com sucesso.",
+  };
 }

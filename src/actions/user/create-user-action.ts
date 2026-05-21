@@ -1,3 +1,5 @@
+"use server";
+
 import { createUserSchema } from "@/src/lib/schemas/user-validation";
 import { hashPassword } from "@/src/lib/bcrypt/hashing-password";
 import { createUserService } from "@/src/services/user/user-service";
@@ -6,16 +8,14 @@ import { ResponseActionTypes } from "@/src/types/response-action-types";
 import { formatZodErrors } from "@/src/utils/format-zod-error";
 
 export async function createUserAction(
-  prevData: Omit<CreateUserDto, "password">,
+  prevData: ResponseActionTypes<Omit<CreateUserDto, "password">>,
   formData: FormData,
-): Promise<
-  ResponseActionTypes<Omit<CreateUserDto, "password"> | { email: string }>
-> {
+): Promise<ResponseActionTypes<Omit<CreateUserDto, "password">>> {
   if (!(formData instanceof FormData)) {
     return {
       success: false,
       errors: ["Dados inválidos"],
-      data: prevData,
+      data: prevData.data,
     };
   }
 
@@ -24,7 +24,7 @@ export async function createUserAction(
 
   if (!result.success) {
     return {
-      data: prevData,
+      data: prevData.data,
       success: false,
       errors: formatZodErrors(result.error),
     };
@@ -43,6 +43,7 @@ export async function createUserAction(
 
     return {
       data: {
+        name,
         email: user.email,
       },
       success: true,
@@ -52,7 +53,7 @@ export async function createUserAction(
     const msg =
       error instanceof Error ? error.message : `Erro desconhecido: ${error}`;
     return {
-      data: prevData,
+      data: prevData.data,
       success: false,
       errors: [msg],
     };
