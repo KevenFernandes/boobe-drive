@@ -7,7 +7,7 @@ const COOKIE_NAME = process.env.COOKIE_NAME || "token_session";
 export async function createSessionCookie(
   user: Omit<JWTPayload, "iat" | "exp">,
 ) {
-  const expiresAt = new Date(Date.now() * 2 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000);
   const token = await encrypt({
     sub: user.sub,
     email: user.email,
