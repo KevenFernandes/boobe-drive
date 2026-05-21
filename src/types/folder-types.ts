@@ -5,6 +5,7 @@ export interface IFolder {
   name: string;
   createdAt: Date;
   updatedAt: Date;
+  userId: string;
 }
 
 export type CreateFolderDto = CreateFolderSchemaTypes;
